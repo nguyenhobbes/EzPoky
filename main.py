@@ -122,8 +122,5 @@ def main():
     print(deck)
 
 
-
-    print("Done!")
-
 if __name__ == "__main__":
     main()
