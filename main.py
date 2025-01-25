@@ -36,7 +36,7 @@ class Deck:
         else:
             return 0
         
-    def discard(self):
+    def burn(self):
         if self.cards:
             self.cards.pop()
         else:
@@ -66,6 +66,41 @@ class Hand:
     
     def fold(self):
         self.cards = []
+
+    def __str__(self):
+        for card in self.cards:
+            print(card)
+
+
+def getbestSets(hand):
+    bestSets = []
+    setPoints = []
+    suits = [card.getSuit() for card in hand]
+    ranks = [card.getRank() for card in hand]
+    for card in hand:
+        if card.getRank() in {1, 10, 11, 12, 13}: # Royal Flush
+            s = card.getSuit()
+            set = [Card(1, s), Card(10, s), Card(11, s), Card(12, s), Card(13, s)]
+            if set in bestSets:
+                continue
+            bestSets.append(set)
+            setPoints.append(10)
+
+        
+
+
+
+            
+            
+
+
+
+
+def calculateOuts(hand, table, deck):
+    out = 0
+
+
+
     
 class Table:
     def __init__(self):
@@ -73,14 +108,14 @@ class Table:
         self.turn = None
         self.river = None
     
-    def dealFlop(self, flops):
+    def getFlop(self, flops):
         for card in flops:
             self.flop.append(card)
     
-    def dealTurn(self, turn):
+    def getTurn(self, turn):
         self.turn = turn
 
-    def dealRiver(self, river):
+    def getRiver(self, river):
         self.river = river
 
     def getTable(self):
@@ -88,13 +123,19 @@ class Table:
     
 
 class Game:
-    def __init__(self, playerNum):
+    def __init__(self, playerNum, random):
         self.players = playerNum
-        self.deck = Deck()
-        self.table = Table()
-        self.hand = [Hand() for i in range (playerNum)]
-
-    def update(self):
+        self.random = random
+        if not self.random:
+            self.deck = Deck()
+            self.table = Table()
+            self.hand = [Hand() for i in range (playerNum)]
+        else:
+            self.deck = None
+            self.table = None
+            self.hand = None
+        
+    def updateDeck(self):
         return self.deck.getDeck()
     
     def dealPlayer(self):
@@ -103,22 +144,43 @@ class Game:
                 card = self.deck.deal()
                 print(card)
                 self.hand[j].receive(card)
-        
+
+    def dealFlop(self):
+        flop = []
+        self.deck.burn()
+        for i in range (3):
+            card = self.deck.deal()
+            flop.append(card)
+        self.table.getFlop(flop)
+    
+    def dealTurn(self):
+        self.deck.burn()
+        card = self.deck.deal()
+        self.table.getTurn(card)
+
+    def dealRiver(self):
+        self.deck.burn()
+        card = self.deck.deal()
+        self.table.getRiver(card)
+
+    def getTable(self):
+        return self.table.getTable()
+    
 
 
 
 def main():
     #playerNum = int(input("Number of player: "))
     #game = Game(playerNum)
-    game = Game(2)
+    game = Game(2, True)
     rank = []
     suit = []
     deck = []
-    rank, suit, deck = game.update()
+    rank, suit, deck = game.updateDeck()
     print(deck)
-    #commit Windows
+
     game.dealPlayer()
-    rank, suit, deck = game.update()
+    rank, suit, deck = game.updateDeck()
     print(deck)
 
 
