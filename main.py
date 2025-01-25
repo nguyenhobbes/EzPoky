@@ -116,7 +116,7 @@ def main():
     deck = []
     rank, suit, deck = game.update()
     print(deck)
-
+    #commit Windows
     game.dealPlayer()
     rank, suit, deck = game.update()
     print(deck)
